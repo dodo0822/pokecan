@@ -11,6 +11,6 @@ void SplashScreen::render() {
 	display.display();
 }
 
-void SplashScreen::key(uint8_t keycode) {
+int8_t SplashScreen::key(uint8_t keycode) {
 	
 }

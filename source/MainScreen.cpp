@@ -12,6 +12,6 @@ void MainScreen::render() {
 	display.display();
 }
 
-void MainScreen::key(uint8_t keycode) {
-	
+int8_t MainScreen::key(uint8_t keycode) {
+	return Screen::SCR_MENU;
 }
