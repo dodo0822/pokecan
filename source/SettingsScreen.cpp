@@ -25,6 +25,7 @@ int8_t SettingsScreen::key(uint8_t keycode) {
 	case 2:
 		return Screen::SCR_MENU;
 	case 3:
+		if(selected == 2) return Screen::SCR_DUMP_TH;
 		break;
 	}
 	return -1;

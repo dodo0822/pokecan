@@ -8,6 +8,7 @@ void MainScreen::render() {
 		display.printfPos(0, 40, "Idle");
 	}
 	display.setTextSize(1);
+	display.printfPos(54, 54-(36*(((float)state.level)/100)), "%2d%%-", state.level);
 	display.drawFastHLine(0, 15, 128, WHITE);
 	for(int i = 0; i < 50; ++i) {
 		for(int j = 0; j < 37; ++j) {

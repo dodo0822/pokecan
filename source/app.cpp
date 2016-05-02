@@ -12,6 +12,7 @@
 #include "pokecan/SettingsScreen.h"
 #include "pokecan/AboutScreen.h"
 #include "pokecan/NetworkScreen.h"
+#include "pokecan/DumpingThresholdScreen.h"
 
 static Screen *scr;
 static State *state;
@@ -62,6 +63,9 @@ static void poll_key(void) {
 		case Screen::SCR_NETWORK:
 			scr = new NetworkScreen(*oled, *state);
 			break;
+		case Screen::SCR_DUMP_TH:
+			scr = new DumpingThresholdScreen(*oled, *state);
+			break;
 		}
 		transition = false;
 		screen_render();
@@ -77,7 +81,8 @@ static void leave_splash(void) {
 }
 
 static void read_distance(void) {
-	
+	state->level += 3;
+	if(state->level > 100) state->level -= 100;
 }
 
 void app_start(int, char**) {
@@ -90,15 +95,12 @@ void app_start(int, char**) {
 		mcp_keys->setup(i, MCP23008::IN);
 		mcp_keys->pullup(i, true);
 	}
-	/*oled.clearDisplay();
-	oled.printf("hello!");
-	oled.display();*/
 	
 	scr = new SplashScreen(*oled, *state);
 	scr->render();
 
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));
 	minar::Scheduler::postCallback(poll_key).period(minar::milliseconds(50));
-	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(1000));
+	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(500));
 	minar::Scheduler::postCallback(read_distance).period(minar::milliseconds(1000));
 }
