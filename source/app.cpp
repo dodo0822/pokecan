@@ -13,6 +13,7 @@
 #include "pokecan/AboutScreen.h"
 #include "pokecan/NetworkScreen.h"
 #include "pokecan/DumpingThresholdScreen.h"
+#include "pokecan/MotorTestScreen.h"
 
 static Screen *scr;
 static State *state;
@@ -66,6 +67,9 @@ static void poll_key(void) {
 		case Screen::SCR_DUMP_TH:
 			scr = new DumpingThresholdScreen(*oled, *state);
 			break;
+		case Screen::SCR_MOTOR_TEST:
+			scr = new MotorTestScreen(*oled, *state);
+			break;
 		}
 		transition = false;
 		screen_render();
@@ -101,6 +105,6 @@ void app_start(int, char**) {
 
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));
 	minar::Scheduler::postCallback(poll_key).period(minar::milliseconds(50));
-	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(500));
+	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(100));
 	minar::Scheduler::postCallback(read_distance).period(minar::milliseconds(1000));
 }

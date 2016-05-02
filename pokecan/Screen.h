@@ -21,6 +21,7 @@ public:
 	constexpr static const int8_t SCR_ABOUT = 4;
 	constexpr static const int8_t SCR_NETWORK = 5;
 	constexpr static const int8_t SCR_DUMP_TH = 6;
+	constexpr static const int8_t SCR_MOTOR_TEST = 7;
 	
 protected:
 	Adafruit_SSD1306_I2c& display;
