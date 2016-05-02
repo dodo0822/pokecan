@@ -8,14 +8,23 @@
 #include "pokecan/Screen.h"
 #include "pokecan/MainScreen.h"
 #include "pokecan/SplashScreen.h"
+#include "pokecan/MenuScreen.h"
+#include "pokecan/SettingsScreen.h"
+#include "pokecan/AboutScreen.h"
+#include "pokecan/NetworkScreen.h"
 
 static Screen *scr;
 static State *state;
-static MCP230xx *mcp_keys;
+static MCP23008 *mcp_keys;
 static Adafruit_SSD1306_I2c *oled;
 static bool transition = false;
 
 static bool keys[4] = { false };
+
+static void screen_render(void) {
+	if(transition) return;
+	scr->render();
+}
 
 static void poll_key(void) {
 	if(transition) return;
@@ -39,29 +48,24 @@ static void poll_key(void) {
 		delete scr;
 		switch(result) {
 		case Screen::SCR_MAIN:
-			scr = new MainScreen();
+			scr = new MainScreen(*oled, *state);
 			break;
 		case Screen::SCR_MENU:
-			scr = new MainScreen();
+			scr = new MenuScreen(*oled, *state);
 			break;
 		case Screen::SCR_SETTINGS:
-			scr = new SettingsScreen();
+			scr = new SettingsScreen(*oled, *state);
 			break;
 		case Screen::SCR_ABOUT:
-			scr = new AboutScreen();
+			scr = new AboutScreen(*oled, *state);
 			break;
 		case Screen::SCR_NETWORK:
-			scr = new NetworkScreen();
+			scr = new NetworkScreen(*oled, *state);
 			break;
 		}
 		transition = false;
 		screen_render();
 	}
-}
-
-static void screen_render(void) {
-	if(transition) return;
-	scr->render();
 }
 
 static void leave_splash(void) {

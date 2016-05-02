@@ -1,8 +1,8 @@
-#include "pokecan/MenuScreen.h"
+#include "pokecan/SettingsScreen.h"
 
-void MenuScreen::render() {
+void SettingsScreen::render() {
 	display.clearDisplay();
-	display.printfPos(20, 0, "Menu");
+	display.printfPos(20, 0, "Settings menu");
 	display.drawFastHLine(0, 9, 128, WHITE);
 	for(unsigned i = 0; i < menu_text.size(); ++i) {
 		string line;
@@ -14,7 +14,7 @@ void MenuScreen::render() {
 	display.display();
 }
 
-int8_t MenuScreen::key(uint8_t keycode) {
+int8_t SettingsScreen::key(uint8_t keycode) {
 	switch(keycode) {
 	case 0:
 		if(selected > 0) --selected;
@@ -23,15 +23,9 @@ int8_t MenuScreen::key(uint8_t keycode) {
 		if(selected < menu_text.size()-1) ++selected;
 		break;
 	case 2:
-		return Screen::SCR_MAIN;
+		return Screen::SCR_MENU;
 	case 3:
-		if(selected == 0) {
-			return Screen::SCR_SETTINGS;
-		} else if(selected == 1) {
-			return Screen::SCR_NETWORK;
-		} else {
-			return Screen::SCR_ABOUT;
-		}
+		break;
 	}
 	return -1;
 }

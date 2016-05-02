@@ -1,5 +1,7 @@
 #pragma once
 
+#include <stdint.h>
+
 class State {
 public:
 	uint8_t status;
