@@ -3,6 +3,8 @@
 #include "adafruit-ssd1306/Adafruit_SSD1306.h"
 #include "mcp230xx/MCP230xx.h"
 
+#include "pokecan/Pins.h"
+
 #include "pokecan/State.h"
 
 #include "pokecan/Screen.h"
@@ -18,6 +20,7 @@
 #include "pokecan/RouteScreen.h"
 
 #include "pokecan/Ultrasonic.h"
+#include "pokecan/NetworkManager.h"
 
 static Screen *scr;
 static State *state;
@@ -25,6 +28,7 @@ static MCP23008 *mcp_keys;
 static Adafruit_SSD1306_I2c *oled;
 static bool transition = false;
 static Ultrasonic ultrasonic(YOTTA_CFG_HARDWARE_PINS_D11, YOTTA_CFG_HARDWARE_PINS_D10, 0.3, 0.3);
+static I2C i2c(YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SDA, YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SCL);
 
 static bool keys[4] = { false };
 
@@ -34,6 +38,7 @@ static void screen_render(void) {
 }
 
 static void poll_key(void) {
+	printf("poll\r\n");
 	if(transition) return;
 	int8_t key_pressed = -1;
 	for(uint8_t i = 0; i < 4; ++i) {
@@ -121,7 +126,7 @@ static void read_distance(void) {
 }
 
 void app_start(int, char**) {
-	static I2C i2c(YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SDA, YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SCL);
+	printf("alive0\r\n");
 	i2c.frequency(400000);
 	state = new State(i2c);
 	oled = new Adafruit_SSD1306_I2c(i2c, YOTTA_CFG_HARDWARE_PINS_D2);
@@ -132,12 +137,19 @@ void app_start(int, char**) {
 	}
 
 	ultrasonic.start_measure();
+	printf("alive1\r\n");
 	
 	scr = new SplashScreen(*oled, *state);
 	scr->render();
+	printf("alive2\r\n");
 
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));
 	minar::Scheduler::postCallback(poll_key).period(minar::milliseconds(50));
 	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(100));
 	minar::Scheduler::postCallback(read_distance).period(minar::milliseconds(300));
+
+	printf("alive3\r\n");
+
+	static NetworkManager nm(PIN_ESP_TX, PIN_ESP_RX, 9600);
+	nm.get_status();
 }

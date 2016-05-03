@@ -1,6 +1,6 @@
 #pragma once
 
-#include <stdint.h>
+#include "mbed-drivers/mbed.h"
 
 class RouteSegment {
 public:
