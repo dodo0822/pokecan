@@ -25,8 +25,10 @@ int8_t SettingsScreen::key(uint8_t keycode) {
 	case 2:
 		return Screen::SCR_MENU;
 	case 3:
-		if(selected == 1) return Screen::SCR_MOTOR_TEST;
+		if(selected == 0) return Screen::SCR_ROUTE;
+		else if(selected == 1) return Screen::SCR_MOTOR_TEST;
 		else if(selected == 2) return Screen::SCR_DUMP_TH;
+		else if(selected == 3) return Screen::SCR_CALIBRATION;
 		break;
 	}
 	return -1;

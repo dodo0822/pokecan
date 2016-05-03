@@ -14,6 +14,8 @@
 #include "pokecan/NetworkScreen.h"
 #include "pokecan/DumpingThresholdScreen.h"
 #include "pokecan/MotorTestScreen.h"
+#include "pokecan/CalibrationScreen.h"
+#include "pokecan/RouteScreen.h"
 
 #include "pokecan/Ultrasonic.h"
 
@@ -72,6 +74,12 @@ static void poll_key(void) {
 			break;
 		case Screen::SCR_MOTOR_TEST:
 			scr = new MotorTestScreen(*oled, *state);
+			break;
+		case Screen::SCR_CALIBRATION:
+			scr = new CalibrationScreen(*oled, *state);
+			break;
+		case Screen::SCR_ROUTE:
+			scr = new RouteScreen(*oled, *state);
 			break;
 		}
 		transition = false;

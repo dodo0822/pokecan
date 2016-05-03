@@ -3,6 +3,8 @@
 #include "mbed-drivers/mbed.h"
 #include "pca9685/PCA9685.h"
 
+#include "pokecan/Pins.h"
+
 #include <vector>
 
 using std::vector;
@@ -21,6 +23,6 @@ private:
 
 	uint8_t channels = 1;
 
-	PinName pins[2] = { YOTTA_CFG_HARDWARE_PINS_SPI_SCK, YOTTA_CFG_HARDWARE_PINS_SPI_CS };
+	PinName pins[2] = { PIN_MOTOR_1_1, PIN_MOTOR_1_2 };
 	vector<DigitalOut> outs;
 };
