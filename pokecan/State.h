@@ -3,16 +3,19 @@
 #include <stdint.h>
 
 #include "pokecan/Config.h"
+#include "pokecan/MotorControl.h"
 
 class State {
 public:
 	uint8_t status;
-	uint8_t distance;
+	float distance;
 	uint8_t level;
+	uint8_t distance_change;
 
 	Config config;
+	MotorControl motor;
 
-	State(){
+	State(I2C &_i2c) : motor(_i2c) {
 		status = IDLE;
 		level = 0;
 		distance = 10;

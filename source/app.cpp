@@ -15,11 +15,14 @@
 #include "pokecan/DumpingThresholdScreen.h"
 #include "pokecan/MotorTestScreen.h"
 
+#include "pokecan/Ultrasonic.h"
+
 static Screen *scr;
 static State *state;
 static MCP23008 *mcp_keys;
 static Adafruit_SSD1306_I2c *oled;
 static bool transition = false;
+static Ultrasonic ultrasonic(YOTTA_CFG_HARDWARE_PINS_D11, YOTTA_CFG_HARDWARE_PINS_D10, 0.3, 0.3);
 
 static bool keys[4] = { false };
 
@@ -85,20 +88,42 @@ static void leave_splash(void) {
 }
 
 static void read_distance(void) {
-	state->level += 3;
-	if(state->level > 100) state->level -= 100;
+	float previous = state->distance;
+	float read = ultrasonic.get_distance();
+	if(read > 30) {
+		read = 30;
+	}
+	if(read < 0) return;
+	float delta = previous - read;
+	if(delta > 10 || delta < -10) {
+		if(state->distance_change++ == 5) {
+			state->distance_change = 0;
+			state->distance = read;
+			state->level = (30 - read) / 30 * 100;
+		} else {
+			read = previous - (delta * state->distance_change / 5);
+			state->distance = read;
+			state->level = (30 - read) / 30 * 100;
+		}
+	} else {
+		state->distance_change = 0;
+		state->distance = read;
+		state->level = (30 - read) / 30 * 100;
+	}
 }
 
 void app_start(int, char**) {
-	state = new State();
 	static I2C i2c(YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SDA, YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SCL);
 	i2c.frequency(400000);
+	state = new State(i2c);
 	oled = new Adafruit_SSD1306_I2c(i2c, YOTTA_CFG_HARDWARE_PINS_D2);
 	mcp_keys = new MCP23008(i2c);
 	for(uint8_t i = 0; i < 4; ++i) {
 		mcp_keys->setup(i, MCP23008::IN);
 		mcp_keys->pullup(i, true);
 	}
+
+	ultrasonic.start_measure();
 	
 	scr = new SplashScreen(*oled, *state);
 	scr->render();
@@ -106,5 +131,5 @@ void app_start(int, char**) {
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));
 	minar::Scheduler::postCallback(poll_key).period(minar::milliseconds(50));
 	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(100));
-	minar::Scheduler::postCallback(read_distance).period(minar::milliseconds(1000));
+	minar::Scheduler::postCallback(read_distance).period(minar::milliseconds(300));
 }

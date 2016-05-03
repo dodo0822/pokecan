@@ -5,16 +5,16 @@
 class Ultrasonic {
 public:
 	Ultrasonic(PinName, PinName, float, float);
-
-	uint16_t get_distance();
-
-private:
-	void echo_rise();
-	void echo_fall();
 	void start_measure(void);
 
+	float get_distance();
+
+private:
+	/*void echo_rise();
+	void echo_fall();*/
+
 	DigitalOut trig;
-	InterruptIn echo;
+	DigitalIn echo;
 
 	Timer timer;
 	Timeout tout;
@@ -22,10 +22,10 @@ private:
 	float timeout;
 	float speed;
 
-	uint16_t distance;
+	float distance;
 
 	bool done;
 
-	int start;
-	int end;
+	float start;
+	float end;
 };
