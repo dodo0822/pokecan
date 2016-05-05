@@ -1,4 +1,11 @@
+#include <cstdlib>
+#include <ctime>
+
 #include "mbed-drivers/mbed.h"
+
+#define YOTTA_CFG_MBED_TRACE
+#include "mbed-trace/mbed_trace.h"
+#define TRACE_GROUP  "main"
 
 #include "adafruit-ssd1306/Adafruit_SSD1306.h"
 #include "mcp230xx/MCP230xx.h"
@@ -29,6 +36,7 @@ static Adafruit_SSD1306_I2c *oled;
 static bool transition = false;
 static Ultrasonic ultrasonic(YOTTA_CFG_HARDWARE_PINS_D11, YOTTA_CFG_HARDWARE_PINS_D10, 0.3, 0.3);
 static I2C i2c(YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SDA, YOTTA_CFG_HARDWARE_TEST_PINS_I2C_SCL);
+static NetworkManager *nm;
 
 static bool keys[4] = { false };
 
@@ -38,7 +46,6 @@ static void screen_render(void) {
 }
 
 static void poll_key(void) {
-	printf("poll\r\n");
 	if(transition) return;
 	int8_t key_pressed = -1;
 	for(uint8_t i = 0; i < 4; ++i) {
@@ -126,7 +133,11 @@ static void read_distance(void) {
 }
 
 void app_start(int, char**) {
-	printf("alive0\r\n");
+	srand(time(NULL));
+
+	mbed_trace_init();
+
+	tr_info("Application start");
 	i2c.frequency(400000);
 	state = new State(i2c);
 	oled = new Adafruit_SSD1306_I2c(i2c, YOTTA_CFG_HARDWARE_PINS_D2);
@@ -137,19 +148,18 @@ void app_start(int, char**) {
 	}
 
 	ultrasonic.start_measure();
-	printf("alive1\r\n");
 	
 	scr = new SplashScreen(*oled, *state);
 	scr->render();
-	printf("alive2\r\n");
+
+	wait_ms(100);
+	nm = new NetworkManager(PIN_ESP_TX, PIN_ESP_RX, 9600);
+	state->nm = nm;
 
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));
 	minar::Scheduler::postCallback(poll_key).period(minar::milliseconds(50));
 	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(100));
 	minar::Scheduler::postCallback(read_distance).period(minar::milliseconds(300));
 
-	printf("alive3\r\n");
-
-	static NetworkManager nm(PIN_ESP_TX, PIN_ESP_RX, 9600);
-	nm.get_status();
+	tr_info("Start process completed");
 }

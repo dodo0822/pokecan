@@ -28,7 +28,7 @@ BufferedSerial::BufferedSerial(PinName tx, PinName rx, uint32_t buf_size, uint32
 {
     RawSerial::attach(this, &BufferedSerial::rxIrq, Serial::RxIrq);
     this->_buf_size = buf_size;
-    this->_tx_multiple = tx_multiple;   
+    this->_tx_multiple = tx_multiple;
     return;
 }
 

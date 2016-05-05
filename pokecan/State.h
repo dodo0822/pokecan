@@ -4,6 +4,7 @@
 
 #include "pokecan/Config.h"
 #include "pokecan/MotorControl.h"
+#include "pokecan/NetworkManager.h"
 
 class State {
 public:
@@ -14,6 +15,7 @@ public:
 
 	Config config;
 	MotorControl motor;
+	NetworkManager* nm;
 
 	State(I2C &_i2c) : motor(_i2c) {
 		status = IDLE;

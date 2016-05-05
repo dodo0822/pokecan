@@ -11,7 +11,6 @@ public:
 		menu_text.push_back("Motor test");
 		menu_text.push_back("Dumping threshold");
 		menu_text.push_back("Calibration");
-		menu_text.push_back("Networking");
 		menu_text.push_back("Factory reset");
 	}
 
