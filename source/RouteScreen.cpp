@@ -5,12 +5,7 @@
 using std::stringstream;
 
 RouteScreen::RouteScreen(Adafruit_SSD1306_I2c& _display, State& _state) : Screen(_display, _state), cursor(0), mode(0) {
-	for(int i = 0; i < 7; ++i) {
-		RouteSegment seg;
-		seg.direction = (i % 5) + 1;
-		seg.distance = i;
-		segments.push_back(seg);
-	}
+	segments = state.config.route;
 	refresh_list();
 	scroll_top = 0;
 	scroll_bot = (list_items.size() > 6 ? 6 : list_items.size());
@@ -113,6 +108,8 @@ int8_t RouteScreen::key(uint8_t keycode) {
 		if(mode == 0) {
 			if(cursor == list_items.size()-1) {
 				// save
+				state.config.route = segments;
+				state.config.save();
 				return Screen::SCR_SETTINGS;
 			} else if(cursor == list_items.size()-2) {
 				// add

@@ -22,6 +22,9 @@ int8_t CalibrationScreen::key(uint8_t keycode) {
 	case 2:
 		return Screen::SCR_SETTINGS;
 	case 3:
+		uint8_t dist = state.distance;
+		state.config.can_height = dist;
+		state.config.save();
 		return Screen::SCR_SETTINGS;
 	}
 	return -1;

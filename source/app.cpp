@@ -110,8 +110,8 @@ static void leave_splash(void) {
 static void read_distance(void) {
 	float previous = state->distance;
 	float read = ultrasonic.get_distance();
-	if(read > 30) {
-		read = 30;
+	if(read > state->config.can_height) {
+		read = state->config.can_height;
 	}
 	if(read < 0) return;
 	float delta = previous - read;
@@ -119,16 +119,16 @@ static void read_distance(void) {
 		if(state->distance_change++ == 5) {
 			state->distance_change = 0;
 			state->distance = read;
-			state->level = (30 - read) / 30 * 100;
+			state->level = (state->config.can_height - read) / state->config.can_height * 100;
 		} else {
 			read = previous - (delta * state->distance_change / 5);
 			state->distance = read;
-			state->level = (30 - read) / 30 * 100;
+			state->level = (state->config.can_height - read) / state->config.can_height * 100;
 		}
 	} else {
 		state->distance_change = 0;
 		state->distance = read;
-		state->level = (30 - read) / 30 * 100;
+		state->level = (state->config.can_height - read) / state->config.can_height * 100;
 	}
 }
 
@@ -138,8 +138,14 @@ void app_start(int, char**) {
 	mbed_trace_init();
 
 	tr_info("Application start");
+	tr_info("Set I2C frequency");
 	i2c.frequency(400000);
+
+	tr_info("Initialize state object and load config");
 	state = new State(i2c);
+	state->config.load();
+
+	tr_info("Initialize user interface module");
 	oled = new Adafruit_SSD1306_I2c(i2c, YOTTA_CFG_HARDWARE_PINS_D2);
 	mcp_keys = new MCP23008(i2c);
 	for(uint8_t i = 0; i < 4; ++i) {
@@ -147,15 +153,19 @@ void app_start(int, char**) {
 		mcp_keys->pullup(i, true);
 	}
 
+	tr_info("Start ultrasonic measuring");
 	ultrasonic.start_measure();
 	
+	tr_info("First screen out");
 	scr = new SplashScreen(*oled, *state);
 	scr->render();
 
+	tr_info("Start NetworkManager");
 	wait_ms(100);
 	nm = new NetworkManager(PIN_ESP_TX, PIN_ESP_RX, 9600);
 	state->nm = nm;
 
+	tr_info("Hook up routine functions");
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));
 	minar::Scheduler::postCallback(poll_key).period(minar::milliseconds(50));
 	minar::Scheduler::postCallback(screen_render).period(minar::milliseconds(100));

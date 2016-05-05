@@ -13,16 +13,14 @@ public:
 	uint8_t level;
 	uint8_t distance_change;
 
-	Config config;
 	MotorControl motor;
+	Config config;
 	NetworkManager* nm;
 
-	State(I2C &_i2c) : motor(_i2c) {
+	State(I2C &_i2c) : motor(_i2c), config(_i2c) {
 		status = IDLE;
 		level = 0;
 		distance = 10;
-		config = Config();
-		config.load();
 	}
 
 	static const uint8_t IDLE;

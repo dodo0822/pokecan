@@ -7,7 +7,7 @@ public:
 	RouteSegment();
 
 	uint8_t direction;
-	uint32_t distance;
+	uint16_t distance;
 
 	constexpr static const uint8_t FORWARD = 1;
 	constexpr static const uint8_t BACKWARD = 2;
