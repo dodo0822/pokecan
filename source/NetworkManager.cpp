@@ -133,7 +133,7 @@ bool NetworkManager::execute(char* resp_buf, int* resp_len) {
 		return false;
 	}
 	//tr_info("ESP8266 exec ok");
-	wait_ms(300);
+	wait_ms(100);
 	if(resp_buf && resp_len) {
 		for(int i = 0; i < *resp_len; ++i) {
 			int c = recv_char();

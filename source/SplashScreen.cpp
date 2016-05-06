@@ -7,7 +7,19 @@ void SplashScreen::render() {
 			display.drawPixel(j, i, px[i*128 + j]);
 		}
 	}
-	display.printfPos(0, 50, "by Dodo, Pierre, Sasa");
+	display.printfPos(0, 48, "By Dodo, Pierre, Sasa");
+	switch(state.startup_phase) {
+	case State::STARTUP_CONF:
+		display.printfPos(0, 56, "Reading config..");
+		break;
+	case State::STARTUP_NM:
+		display.printfPos(0, 56, "Initialize wireless..");
+		break;
+	case State::STARTUP_FIN:
+	default:
+		display.printfPos(0, 56, "One moment please..");
+		break;
+	}
 	display.display();
 }
 

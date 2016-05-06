@@ -71,10 +71,12 @@ void NetworkScreen::render() {
 	} else if(mode == 1) {
 		display.printfPos(0, 15, "Please connect to the");
 		display.printfPos(0, 23, "Wi-Fi and set me up.");
-		display.printfPos(0, 37, "Name: Pokecan_%.4s", setup_ssid.c_str());
-		display.printfPos(0, 45, "Pass: %s", setup_ssid.c_str());
+		display.printfPos(0, 37, "Name:Pokecan_%s", setup_ssid.c_str());
+		display.printfPos(0, 45, "Pass:%s", setup_ssid.c_str());
 	} else if(mode == 2) {
 		display.printfPos(0, 15, "IP: %s", ip.c_str());
+	} else {
+		display.printfPos(0, 15, "Wait...");
 	}
 	display.display();
 }
@@ -104,6 +106,8 @@ int8_t NetworkScreen::key(uint8_t keycode) {
 		if(menu_selected == 0) {
 			if(ip == NetworkManager::NO_IP) {
 				// setup
+				mode = 3;
+				render();
 				start_setup();
 				mode = 1;
 			} else {

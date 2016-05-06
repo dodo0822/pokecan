@@ -141,10 +141,6 @@ void app_start(int, char**) {
 	tr_info("Set I2C frequency");
 	i2c.frequency(400000);
 
-	tr_info("Initialize state object and load config");
-	state = new State(i2c);
-	state->config.load();
-
 	tr_info("Initialize user interface module");
 	oled = new Adafruit_SSD1306_I2c(i2c, YOTTA_CFG_HARDWARE_PINS_D2);
 	mcp_keys = new MCP23008(i2c);
@@ -153,17 +149,30 @@ void app_start(int, char**) {
 		mcp_keys->pullup(i, true);
 	}
 
-	tr_info("Start ultrasonic measuring");
-	ultrasonic.start_measure();
-	
+	tr_info("Initialize state object");
+	state = new State(i2c);
+
 	tr_info("First screen out");
+	state->startup_phase = State::STARTUP_CONF;
 	scr = new SplashScreen(*oled, *state);
+	scr->render();
+
+	tr_info("Load config");
+	state->config.load();
+
+	state->startup_phase = State::STARTUP_NM;
 	scr->render();
 
 	tr_info("Start NetworkManager");
 	wait_ms(100);
 	nm = new NetworkManager(PIN_ESP_TX, PIN_ESP_RX, 9600);
 	state->nm = nm;
+
+	state->startup_phase = State::STARTUP_FIN;
+	scr->render();
+	
+	tr_info("Start ultrasonic measuring");
+	ultrasonic.start_measure();
 
 	tr_info("Hook up routine functions");
 	minar::Scheduler::postCallback(leave_splash).delay(minar::milliseconds(500));

@@ -13,6 +13,8 @@ public:
 	uint8_t level;
 	uint8_t distance_change;
 
+	uint8_t startup_phase;
+
 	MotorControl motor;
 	Config config;
 	NetworkManager* nm;
@@ -26,4 +28,8 @@ public:
 	static const uint8_t IDLE;
 	static const uint8_t MOVE;
 	static const uint8_t DUMP;
+
+	constexpr static const uint8_t STARTUP_NM = 1;
+	constexpr static const uint8_t STARTUP_CONF = 2;
+	constexpr static const uint8_t STARTUP_FIN = 3;
 };
