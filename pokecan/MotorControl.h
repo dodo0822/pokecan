@@ -2,6 +2,7 @@
 
 #include "mbed-drivers/mbed.h"
 #include "pca9685/PCA9685.h"
+#include "mcp230xx/MCP230xx.h"
 
 #include "pokecan/Pins.h"
 
@@ -20,9 +21,7 @@ public:
 private:
 	I2C& i2c;
 	PCA9685 pca;
+	MCP23017 mcp;
 
-	uint8_t channels = 1;
-
-	PinName pins[2] = { PIN_MOTOR_1_1, PIN_MOTOR_1_2 };
-	vector<DigitalOut> outs;
+	uint8_t channels = 8;
 };

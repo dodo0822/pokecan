@@ -23,16 +23,16 @@ void MotorTestScreen::render() {
 
 void MotorTestScreen::forward() {
 	mode = 1;
-	state.motor.forward(0, 100);
+	state.motor.forward(4, 100);
 	minar::Scheduler::postCallback(FunctionPointer0<void>(this, &MotorTestScreen::backward).bind()).delay(minar::milliseconds(1000));
 }
 void MotorTestScreen::backward() {
 	mode = 2;
-	state.motor.backward(0, 100);
+	state.motor.backward(4, 100);
 	minar::Scheduler::postCallback(FunctionPointer0<void>(this, &MotorTestScreen::finish_test).bind()).delay(minar::milliseconds(1000));
 }
 void MotorTestScreen::finish_test() {
-	state.motor.stop(0);
+	state.motor.stop(4);
 	mode = 0;
 }
 
